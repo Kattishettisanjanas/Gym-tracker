@@ -1,2 +1,60 @@
 # Gym-tracker
 Track workouts and calculate basic progress metrics. Tables: Members, Workouts, Exercises, WorkoutLogs.
+DROP TABLE IF EXISTS workoutlogs, workouts, exercises, members;
+
+CREATE TABLE members (
+    member_id SERIAL PRIMARY KEY,
+    name TEXT,
+    join_date DATE
+);
+
+CREATE TABLE exercises (
+    exercise_id SERIAL PRIMARY KEY,
+    exercise_name TEXT,
+    muscle_group TEXT
+);
+
+CREATE TABLE workouts (
+    workout_id SERIAL PRIMARY KEY,
+    member_id INT REFERENCES members(member_id),
+    workout_date DATE
+);
+
+CREATE TABLE workoutlogs (
+    log_id SERIAL PRIMARY KEY,
+    workout_id INT REFERENCES workouts(workout_id),
+    exercise_id INT REFERENCES exercises(exercise_id),
+    reps INT,
+    sets INT,
+    INSERT INTO members (name, join_date)
+VALUES ('Alice', '2024-01-01'), ('Bob', '2024-02-01');
+
+INSERT INTO exercises (exercise_name, muscle_group)
+VALUES ('Bench Press', 'Chest'), ('Squat', 'Legs'), ('Deadlift', 'Back');
+
+INSERT INTO workouts (member_id, workout_date)
+VALUES (1, '2024-03-01'), (1, '2024-03-03'), (2, '2024-03-02');
+
+INSERT INTO workoutlogs (workout_id, exercise_id, reps, sets, weight)
+VALUES 
+(1, 1, 10, 3, 60),
+(1, 2, 8, 3, 80),
+(2, 1, 12, 3, 65),
+(3, 3, 5, 5, 100);
+SELECT 
+    m.name,
+    e.exercise_name,
+    SUM(wl.reps * wl.sets) AS total_reps
+FROM workoutlogs wl
+JOIN workouts w ON wl.workout_id = w.workout_id
+JOIN members m ON w.member_id = m.member_id
+JOIN exercises e ON wl.exercise_id = e.exercise_id
+GROUP BY m.name, e.exercise_name
+ORDER BY total_reps DESC;
+
+Expected Output
+Alice | Bench Press | 66
+Alice | Squat       | 24
+Bob   | Deadlift    | 25
+    weight NUMERIC
+);
