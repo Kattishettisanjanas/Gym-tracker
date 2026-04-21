@@ -55,4 +55,4 @@ Alice | Bench Press | 66
 Alice | Squat       | 24
 Bob   | Deadlift    | 25
     weight NUMERIC
-);
+
